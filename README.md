@@ -12,5 +12,4 @@ a9sharvest group
 ```
 
 # TODOs
-- iterate over multiple result pages
 - specify `from` and `to` params

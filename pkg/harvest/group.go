@@ -5,15 +5,19 @@ import (
 	"fmt"
 	"net/url"
 	"os"
+	"strconv"
 
 	log "github.com/sirupsen/logrus"
 )
 
+type TimeEntry struct {
+	Hours float64
+	Notes string
+}
+
 type Content struct {
-	TimeEntries []struct {
-		Hours float64
-		Notes string
-	} `json:"time_entries"`
+	TimeEntries []TimeEntry `json:"time_entries"`
+	NextPage    *int        `json:"next_page"`
 }
 
 func Group(verboseFlag bool) error {
@@ -26,20 +30,12 @@ func Group(verboseFlag bool) error {
 		return err
 	}
 
-	log.Debug("Querying harvest...")
-	data, err := fetchData()
-	if err != nil {
-		return err
-	}
-	log.Debug("Queried harvest.")
-
-	var content Content
-	err = json.Unmarshal(data, &content)
+	entries, err := fetchTimeEntries()
 	if err != nil {
 		return err
 	}
 
-	for _, v := range content.TimeEntries {
+	for _, v := range entries {
 		fmt.Printf("%v : %v\n", v.Hours, v.Notes)
 	}
 
@@ -60,20 +56,45 @@ func CheckEnvVariables() error {
 	return nil
 }
 
-// FIXME iterate over multiple pages -> pagination
+func fetchTimeEntries() ([]TimeEntry, error) {
+	entries := []TimeEntry{}
+
+	nextPage := 1
+	for {
+		log.WithFields(log.Fields{
+			"page": nextPage,
+		}).Debug("Querying page...")
+		data, err := fetchData(nextPage)
+		if err != nil {
+			return entries, err
+		}
+		log.Debug("Queried page.")
+
+		var content Content
+		err = json.Unmarshal(data, &content)
+		if err != nil {
+			return entries, err
+		}
+		entries = append(entries, content.TimeEntries...)
+
+		if content.NextPage == nil {
+			break
+		}
+		nextPage = *content.NextPage
+	}
+
+	return entries, nil
+}
+
 // FIXME hardcoded from, to values
-func fetchData() ([]byte, error) {
+func fetchData(page int) ([]byte, error) {
 	v := url.Values{}
 	v.Set("from", "20200901")
 	v.Set("to", "20200911")
-	v.Set("page", "1")
+	v.Set("page", strconv.Itoa(page))
+	v.Set("per_page", "20")
 
 	// https://help.getharvest.com/api-v2/timesheets-api/timesheets/time-entries/#list-all-time-entries
-	url := "https://api.harvestapp.com/v2/time_entries" + "?" //+ v.Encode()
-	body, err := HttpGet(url, os.Getenv("ACCOUNT_ID"), os.Getenv("TOKEN"))
-	if err != nil {
-		return body, err
-	}
-
-	return body, nil
+	url := "https://api.harvestapp.com/v2/time_entries" + "?" + v.Encode()
+	return HttpGet(url, os.Getenv("ACCOUNT_ID"), os.Getenv("TOKEN"))
 }
