@@ -6,6 +6,7 @@ import (
 	"net/url"
 	"os"
 	"strconv"
+	"strings"
 
 	log "github.com/sirupsen/logrus"
 )
@@ -35,8 +36,31 @@ func Group(verboseFlag bool) error {
 		return err
 	}
 
+	TAG_UNKNOWN := "[unknown]"
+	tags := strings.Split(os.Getenv("TAGS"), ",")
+	log.WithFields(log.Fields{
+		"tags": tags,
+	}).Debug("Set up tags.")
+	grouped_by_tags := make(map[string]float64)
+
 	for _, v := range entries {
-		fmt.Printf("%v : %v\n", v.Hours, v.Notes)
+		matched := false
+
+		for _, t := range tags {
+			if strings.Contains(v.Notes, t) {
+				grouped_by_tags[t] += v.Hours
+				matched = true
+				break
+			}
+		}
+
+		if !matched {
+			grouped_by_tags[TAG_UNKNOWN] += v.Hours
+		}
+	}
+
+	for k, v := range grouped_by_tags {
+		fmt.Printf(" %v = %v\n", k, v)
 	}
 
 	log.Debug("Done.")
@@ -45,7 +69,7 @@ func Group(verboseFlag bool) error {
 }
 
 func CheckEnvVariables() error {
-	keys := []string{"ACCOUNT_ID", "TOKEN"}
+	keys := []string{"ACCOUNT_ID", "TOKEN", "TAGS"}
 
 	for _, key := range keys {
 		if len(os.Getenv(key)) < 1 {
@@ -90,7 +114,7 @@ func fetchTimeEntries() ([]TimeEntry, error) {
 func fetchData(page int) ([]byte, error) {
 	v := url.Values{}
 	v.Set("from", "20200901")
-	v.Set("to", "20200911")
+	v.Set("to", "20200920")
 	v.Set("page", strconv.Itoa(page))
 	v.Set("per_page", "20")
 
