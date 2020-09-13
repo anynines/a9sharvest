@@ -121,9 +121,6 @@ func fetchData(page int) ([]byte, error) {
 	if len(from) < 1 {
 		from = time.Now().AddDate(0, 0, -14).Format("20060102")
 	}
-	log.WithFields(log.Fields{
-		"from": from,
-	}).Debug("FROM field")
 
 	v := url.Values{}
 	v.Set("from", from)
