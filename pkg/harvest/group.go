@@ -7,6 +7,7 @@ import (
 	"os"
 	"strconv"
 	"strings"
+	"time"
 
 	log "github.com/sirupsen/logrus"
 )
@@ -69,7 +70,7 @@ func Group(verboseFlag bool) error {
 }
 
 func CheckEnvVariables() error {
-	keys := []string{"ACCOUNT_ID", "TOKEN", "TAGS", "FROM", "TO"}
+	keys := []string{"ACCOUNT_ID", "TOKEN", "TAGS"}
 
 	for _, key := range keys {
 		if len(os.Getenv(key)) < 1 {
@@ -110,11 +111,23 @@ func fetchTimeEntries() ([]TimeEntry, error) {
 	return entries, nil
 }
 
-// FIXME hardcoded from, to values
 func fetchData(page int) ([]byte, error) {
+	to := os.Getenv("TO")
+	if len(to) < 1 {
+		to = time.Now().Format("20060102")
+	}
+
+	from := os.Getenv("FROM")
+	if len(from) < 1 {
+		from = time.Now().AddDate(0, 0, -14).Format("20060102")
+	}
+	log.WithFields(log.Fields{
+		"from": from,
+	}).Debug("FROM field")
+
 	v := url.Values{}
-	v.Set("from", os.Getenv("FROM"))
-	v.Set("to", os.Getenv("TO"))
+	v.Set("from", from)
+	v.Set("to", to)
 	v.Set("page", strconv.Itoa(page))
 	v.Set("per_page", "20")
 

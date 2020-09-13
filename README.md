@@ -16,8 +16,8 @@ $ export ACCOUNT_ID=12345
 $ export TOKEN=12345.pt.Avfe-WEFWEF...D4z
 
 $ export TAGS="[meeting_orga_lane],[support_lane]"
-$ export FROM="20200901"
-$ export TO="20200914"
+$ export FROM="20200901" # 14 days ago by default
+$ export TO="20200914" # today by default
 
 $ a9sharvest group
 [unknown] = 68.17
