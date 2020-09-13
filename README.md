@@ -28,6 +28,6 @@ $ a9sharvest group
 # Manual Release Building
 
 ```shell
-git tag -a stable-0.1.0
-GOOS=darwin GOARCH=amd64 go build -ldflags "-X github.com/anynines/a9sharvest/pkg/version.Version=stable-0.1.0"
+git tag -a v1.1.0
+GOOS=darwin GOARCH=amd64 go build -ldflags "-X github.com/anynines/a9sharvest/pkg/version.Version=v1.1.0"
 ```
