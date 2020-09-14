@@ -18,6 +18,7 @@ type Project struct {
 }
 
 type TimeEntry struct {
+	Id      int
 	Hours   float64
 	Notes   string
 	Project Project
@@ -58,10 +59,11 @@ func Group(verboseFlag bool) error {
 
 	for _, v := range entries {
 		log.WithFields(log.Fields{
+			"id":           v.Id,
 			"project-id":   v.Project.Id,
 			"project-name": v.Project.Name,
 			"hours":        v.Hours,
-			"Notes":        v.Notes,
+			"notes":        v.Notes,
 		}).Debug("time entry")
 
 		if _, ok := skip_project_ids_map[strconv.Itoa(v.Project.Id)]; ok {
