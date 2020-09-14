@@ -12,9 +12,15 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
+type Project struct {
+	Id   int
+	Name string
+}
+
 type TimeEntry struct {
-	Hours float64
-	Notes string
+	Hours   float64
+	Notes   string
+	Project Project
 }
 
 type Content struct {
@@ -37,6 +43,12 @@ func Group(verboseFlag bool) error {
 		return err
 	}
 
+	skip_project_ids := strings.Split(os.Getenv("SKIP_PROJECT_IDS"), ",")
+	skip_project_ids_map := map[string]int{}
+	for _, v := range skip_project_ids {
+		skip_project_ids_map[v] = 1
+	}
+
 	TAG_UNKNOWN := "[unknown]"
 	tags := strings.Split(os.Getenv("TAGS"), ",")
 	log.WithFields(log.Fields{
@@ -45,6 +57,20 @@ func Group(verboseFlag bool) error {
 	grouped_by_tags := make(map[string]float64)
 
 	for _, v := range entries {
+		log.WithFields(log.Fields{
+			"project-id":   v.Project.Id,
+			"project-name": v.Project.Name,
+			"hours":        v.Hours,
+			"Notes":        v.Notes,
+		}).Debug("time entry")
+
+		if _, ok := skip_project_ids_map[strconv.Itoa(v.Project.Id)]; ok {
+			log.WithFields(log.Fields{
+				"project-id": v.Project.Id,
+			}).Debug("Skipped because of project id")
+			continue
+		}
+
 		matched := false
 
 		for _, t := range tags {
@@ -56,6 +82,9 @@ func Group(verboseFlag bool) error {
 		}
 
 		if !matched {
+			log.WithFields(log.Fields{
+				"Notes": v.Notes,
+			}).Debug("New [unknown] entry")
 			grouped_by_tags[TAG_UNKNOWN] += v.Hours
 		}
 	}
