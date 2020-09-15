@@ -9,6 +9,12 @@ $ brew tap anynines/a9sharvest
 $ brew install a9sharvest
 ```
 
+# Requirements
+
+Before you can use `a9sharvest` you need a token and the account ID.
+You can get both by accessing the [developer tools](https://id.getharvest.com/developers)
+and creating a new token.
+
 # Usage
 
 ```shell
@@ -32,3 +38,8 @@ $ a9sharvest group
 git tag -a v1.1.0
 GOOS=darwin GOARCH=amd64 go build -ldflags "-X github.com/anynines/a9sharvest/pkg/version.Version=v1.1.0"
 ```
+
+# Links
+
+ - [Developer tools](https://id.getharvest.com/developers)
+ - [API documentation](http://help.getharvest.com/api-v2/)
