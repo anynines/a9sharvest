@@ -56,6 +56,12 @@ func Group(verboseFlag bool) error {
 		skip_project_ids_map[v] = 1
 	}
 
+	allowed_user_ids := strings.Split(os.Getenv("ALLOWED_USER_IDS"), ",")
+	allowed_user_ids_map := map[string]int{}
+	for _, v := range allowed_user_ids {
+		allowed_user_ids_map[v] = 1
+	}
+
 	TAG_UNKNOWN := "[unknown]"
 	tags := strings.Split(os.Getenv("TAGS"), ",")
 	log.WithFields(log.Fields{
@@ -78,6 +84,13 @@ func Group(verboseFlag bool) error {
 			log.WithFields(log.Fields{
 				"project-id": v.Project.Id,
 			}).Debug("Skipped because of project id")
+			continue
+		}
+
+		if _, ok := allowed_user_ids_map[strconv.Itoa(v.User.Id)]; !ok {
+			log.WithFields(log.Fields{
+				"user-id": v.User.Id,
+			}).Debug("Skipped because of user id")
 			continue
 		}
 
