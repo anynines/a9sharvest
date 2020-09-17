@@ -157,7 +157,7 @@ func fetchData(page int) ([]byte, error) {
 	v.Set("from", from)
 	v.Set("to", to)
 	v.Set("page", strconv.Itoa(page))
-	v.Set("per_page", "20")
+	v.Set("per_page", "1000")
 
 	// https://help.getharvest.com/api-v2/timesheets-api/timesheets/time-entries/#list-all-time-entries
 	url := "https://api.harvestapp.com/v2/time_entries" + "?" + v.Encode()
