@@ -17,11 +17,17 @@ type Project struct {
 	Name string
 }
 
+type User struct {
+	Id   int
+	Name string
+}
+
 type TimeEntry struct {
 	Id      int
 	Hours   float64
 	Notes   string
 	Project Project
+	User    User
 }
 
 type Content struct {
@@ -62,6 +68,8 @@ func Group(verboseFlag bool) error {
 			"id":           v.Id,
 			"project-id":   v.Project.Id,
 			"project-name": v.Project.Name,
+			"user-id":      v.User.Id,
+			"user-name":    v.User.Name,
 			"hours":        v.Hours,
 			"notes":        v.Notes,
 		}).Debug("time entry")
