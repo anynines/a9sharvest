@@ -56,6 +56,7 @@ func Group(verboseFlag bool) error {
 		skip_project_ids_map[v] = 1
 	}
 
+	allowed_user_ids_enabled := len(os.Getenv("ALLOWED_USER_IDS")) > 0
 	allowed_user_ids := strings.Split(os.Getenv("ALLOWED_USER_IDS"), ",")
 	allowed_user_ids_map := map[string]int{}
 	for _, v := range allowed_user_ids {
@@ -87,11 +88,13 @@ func Group(verboseFlag bool) error {
 			continue
 		}
 
-		if _, ok := allowed_user_ids_map[strconv.Itoa(v.User.Id)]; !ok {
-			log.WithFields(log.Fields{
-				"user-id": v.User.Id,
-			}).Debug("Skipped because of user id")
-			continue
+		if allowed_user_ids_enabled {
+			if _, ok := allowed_user_ids_map[strconv.Itoa(v.User.Id)]; !ok {
+				log.WithFields(log.Fields{
+					"user-id": v.User.Id,
+				}).Debug("Skipped because of user id")
+				continue
+			}
 		}
 
 		matched := false
