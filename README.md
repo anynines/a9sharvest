@@ -5,7 +5,7 @@ a9sharvest is a CLI tool for [Harvest](https://www.getharvest.com/).
 # Installation
 
 ```shell
-$ brew tap anynines/a9sharvest
+$ brew tap anynines/tap
 $ brew install a9sharvest
 ```
 
