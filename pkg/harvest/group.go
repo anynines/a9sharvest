@@ -71,7 +71,7 @@ func Group(verboseFlag bool) error {
 	grouped_by_tags := make(map[string]float64)
 
 	for _, v := range entries {
-		log.WithFields(log.Fields{
+		logFields := log.Fields{
 			"id":           v.Id,
 			"project-id":   v.Project.Id,
 			"project-name": v.Project.Name,
@@ -79,20 +79,17 @@ func Group(verboseFlag bool) error {
 			"user-name":    v.User.Name,
 			"hours":        v.Hours,
 			"notes":        v.Notes,
-		}).Debug("time entry")
+		}
+		log.WithFields(logFields).Trace("time entry")
 
 		if _, ok := skip_project_ids_map[strconv.Itoa(v.Project.Id)]; ok {
-			log.WithFields(log.Fields{
-				"project-id": v.Project.Id,
-			}).Debug("Skipped because of project id")
+			log.WithFields(logFields).Trace("Skipped because of project id")
 			continue
 		}
 
 		if allowed_user_ids_enabled {
 			if _, ok := allowed_user_ids_map[strconv.Itoa(v.User.Id)]; !ok {
-				log.WithFields(log.Fields{
-					"user-id": v.User.Id,
-				}).Debug("Skipped because of user id")
+				log.WithFields(logFields).Trace("Skipped because of user id")
 				continue
 			}
 		}
@@ -108,9 +105,7 @@ func Group(verboseFlag bool) error {
 		}
 
 		if !matched {
-			log.WithFields(log.Fields{
-				"Notes": v.Notes,
-			}).Debug("New [unknown] entry")
+			log.WithFields(logFields).Debug("New [unknown] entry")
 			grouped_by_tags[TAG_UNKNOWN] += v.Hours
 		}
 	}
@@ -139,16 +134,16 @@ func CheckEnvVariables() error {
 func fetchTimeEntries() ([]TimeEntry, error) {
 	entries := []TimeEntry{}
 
+	log.Debug("Fetching Harvest entries via HTTP API...")
 	nextPage := 1
 	for {
 		log.WithFields(log.Fields{
 			"page": nextPage,
-		}).Debug("Querying page...")
+		}).Trace("Querying page...")
 		data, err := fetchData(nextPage)
 		if err != nil {
 			return entries, err
 		}
-		log.Debug("Queried page.")
 
 		var content Content
 		err = json.Unmarshal(data, &content)
@@ -162,6 +157,7 @@ func fetchTimeEntries() ([]TimeEntry, error) {
 		}
 		nextPage = *content.NextPage
 	}
+	log.Debug("Fetched Harvest entries.")
 
 	return entries, nil
 }
