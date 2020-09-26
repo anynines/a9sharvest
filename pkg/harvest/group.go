@@ -23,11 +23,12 @@ type User struct {
 }
 
 type TimeEntry struct {
-	Id      int
-	Hours   float64
-	Notes   string
-	Project Project
-	User    User
+	Id        int
+	Hours     float64
+	Notes     string
+	Project   Project
+	User      User
+	SpentDate string `json:"spent_date"`
 }
 
 type Content struct {
@@ -81,12 +82,13 @@ func Group(verboseFlag bool) error {
 	for _, v := range entries {
 		logFields := log.Fields{
 			"id":           v.Id,
+			"spent_date":   v.SpentDate,
+			"hours":        v.Hours,
+			"notes":        v.Notes,
 			"project-id":   v.Project.Id,
 			"project-name": v.Project.Name,
 			"user-id":      v.User.Id,
 			"user-name":    v.User.Name,
-			"hours":        v.Hours,
-			"notes":        v.Notes,
 		}
 		log.WithFields(logFields).Trace("time entry")
 
