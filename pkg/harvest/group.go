@@ -39,6 +39,14 @@ func Group(verboseFlag bool) error {
 	if verboseFlag {
 		log.SetLevel(log.DebugLevel)
 	}
+	logLevel := os.Getenv("LOG_LEVEL")
+	if len(logLevel) > 0 {
+		lvl, err := log.ParseLevel(logLevel)
+		if err != nil {
+			log.Fatalf("Wrong log level %v", logLevel)
+		}
+		log.SetLevel(lvl)
+	}
 
 	err := CheckEnvVariables()
 	if err != nil {

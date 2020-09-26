@@ -21,6 +21,8 @@ and creating a new token.
 $ export ACCOUNT_ID=12345
 $ export TOKEN=12345.pt.Avfe-WEFWEF...D4z
 
+$ export LOG_LEVEL=debug # `debug`, `trace` or empty
+
 $ export TAGS="[meeting_orga_lane],[support_lane]"
 
 $ export SKIP_PROJECT_IDS="12345,6789" # do not skip any project by default
