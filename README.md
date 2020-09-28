@@ -32,12 +32,14 @@ $ export FROM="20200901" # 14 days ago by default
 $ export TO="20200914" # today by default
 
 $ a9sharvest group
-  [customer_lane]     |  3.00
-  [side_project_lane] |  3.21
-  [standard_lane]     | 33.56
-  [meeting_orga_lane] | 13.66
-  [misc_lane]         |  8.75
-  [support_lane]      | 23.69
+  [side_project_lane] |   7.54 |  0.95
+  [standard_lane]     | 154.30 | 19.51
+  [unknown]           |   0.22 |  0.03
+  [customer_lane]     | 199.99 | 25.29
+  [a8s_lane]          |  46.01 |  5.82
+  [meeting_orga_lane] | 181.97 | 23.01
+  [support_lane]      | 187.43 | 23.70
+  [misc_lane]         |  13.37 |  1.69
 ```
 
 # Manual Release Building
