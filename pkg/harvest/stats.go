@@ -1,9 +1,5 @@
 package harvest
 
-import (
-	log "github.com/sirupsen/logrus"
-)
-
 type Stats struct {
 	GroupedByTag    map[string]float64
 	percentageByTag map[string]float64
