@@ -18,8 +18,10 @@ func (s *Stats) prepare() {
 	s.totalHours = s.calculateTotalHours()
 
 	p := make(map[string]float64)
-	for k, v := range s.GroupedByTag {
-		p[k] = v * 100.0 / s.totalHours
+	if s.totalHours > 0.00 {
+		for k, v := range s.GroupedByTag {
+			p[k] = v * 100.0 / s.totalHours
+		}
 	}
 	s.percentageByTag = p
 }
