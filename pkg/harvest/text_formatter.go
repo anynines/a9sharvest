@@ -21,6 +21,7 @@ func (f *TextFormatter) Output() {
 	table := tablewriter.NewWriter(os.Stdout)
 	table.SetBorder(false)
 
+	table.SetHeader([]string{"Tag", "Hours", "%"})
 	for tag, v := range f.Stats.GroupedByTag {
 		p := f.Stats.PercentageForTag(tag)
 		table.Append([]string{tag, fmt.Sprintf("%.2f", v), fmt.Sprintf("%.2f", p)})
