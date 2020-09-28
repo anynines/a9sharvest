@@ -8,12 +8,12 @@ import (
 )
 
 type TextFormatter struct {
-	Result *Result
+	Stats *Stats
 }
 
-func NewTextFormatter(result *Result) *TextFormatter {
+func NewTextFormatter(stats *Stats) *TextFormatter {
 	return &TextFormatter{
-		Result: result,
+		Stats: stats,
 	}
 }
 
@@ -21,7 +21,7 @@ func (f *TextFormatter) Output() {
 	table := tablewriter.NewWriter(os.Stdout)
 	table.SetBorder(false)
 
-	for k, v := range f.Result.GroupedByTag {
+	for k, v := range f.Stats.GroupedByTag {
 		table.Append([]string{k, fmt.Sprintf("%.2f", v)})
 	}
 
