@@ -36,6 +36,10 @@ type Content struct {
 	NextPage    *int        `json:"next_page"`
 }
 
+type Result struct {
+	GroupedByTag map[string]float64
+}
+
 func Group(verboseFlag bool) error {
 	if verboseFlag {
 		log.SetLevel(log.DebugLevel)
@@ -120,11 +124,11 @@ func Group(verboseFlag bool) error {
 		}
 	}
 
-	for k, v := range grouped_by_tags {
-		fmt.Printf("%v = %v\n", k, v)
+	result := &Result{
+		GroupedByTag: grouped_by_tags,
 	}
-
-	log.Debug("Done.")
+	formatter := NewTextFormatter(result)
+	formatter.Output()
 
 	return nil
 }
