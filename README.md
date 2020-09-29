@@ -34,15 +34,17 @@ $ export TO="20200914" # today by default
 $ a9sharvest group
           TAG         | HOURS  |   %
 ----------------------+--------+--------
-  [customer_lane]     | 199.99 | 25.29
-  [a8s_lane]          |  46.01 |  5.82
-  [meeting_orga_lane] | 181.97 | 23.01
-  [support_lane]      | 187.43 | 23.70
-  [misc_lane]         |  13.37 |  1.69
-  [side_project_lane] |   7.54 |  0.95
-  [standard_lane]     | 154.30 | 19.51
-  [unknown]           |   0.22 |  0.03
+  [meeting_orga_lane] |  97.50 | 48.75
+  [support_lane]      | 100.50 | 50.25
+  [unknown]           |   2.00 |  1.00
+
+$ a9sharvest group -o csv
+Tag,Hours,Percentage
+[meeting_orga_lane],97.50,48.75
+[support_lane],100.50,50.25
+[unknown],2.00,1.00
 ```
+
 
 # Manual Release Building
 

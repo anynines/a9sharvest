@@ -8,6 +8,10 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
+type ReportInterface interface {
+	Output()
+}
+
 type Report struct {
 	TimeEntries  []TimeEntry
 	groupedByTag map[string]float64

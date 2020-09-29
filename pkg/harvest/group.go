@@ -6,10 +6,13 @@ import (
 	"net/url"
 	"os"
 	"strconv"
+	"strings"
 	"time"
 
 	log "github.com/sirupsen/logrus"
 )
+
+type OutputFormat uint32
 
 type Project struct {
 	Id   int
@@ -39,7 +42,7 @@ type Result struct {
 	GroupedByTag map[string]float64
 }
 
-func Group(verboseFlag bool) error {
+func Group(verboseFlag bool, outputFlag string) error {
 	if verboseFlag {
 		log.SetLevel(log.DebugLevel)
 	}
@@ -57,6 +60,11 @@ func Group(verboseFlag bool) error {
 		return err
 	}
 
+	outputFormat, err := parseOutputFormat(outputFlag)
+	if err != nil {
+		log.Fatalln(err)
+	}
+
 	entries, err := fetchTimeEntries()
 	if err != nil {
 		return err
@@ -66,7 +74,13 @@ func Group(verboseFlag bool) error {
 	report.Run()
 	stats := report.Stats()
 
-	formatter := NewTextFormatter(stats)
+	var formatter ReportInterface
+	switch outputFormat {
+	case CSVOutputFormat:
+		formatter = NewCSVFormatter(stats)
+	default:
+		formatter = NewTextFormatter(stats)
+	}
 	formatter.Output()
 
 	return nil
@@ -136,3 +150,20 @@ func fetchData(page int) ([]byte, error) {
 	url := "https://api.harvestapp.com/v2/time_entries" + "?" + v.Encode()
 	return HttpGet(url, os.Getenv("ACCOUNT_ID"), os.Getenv("TOKEN"))
 }
+
+func parseOutputFormat(of string) (OutputFormat, error) {
+	switch strings.ToLower(of) {
+	case "csv":
+		return CSVOutputFormat, nil
+	case "text":
+		return TextOutputFormat, nil
+	}
+
+	var o OutputFormat
+	return o, fmt.Errorf("not a valid output format: %q", of)
+}
+
+const (
+	TextOutputFormat OutputFormat = iota
+	CSVOutputFormat
+)
