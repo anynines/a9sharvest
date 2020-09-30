@@ -19,7 +19,7 @@ func newCmdGroup() *cobra.Command {
 		},
 	}
 
-	cmd.Flags().StringP("output", "o", "stdout", "Output format: stdout, csv.")
+	cmd.Flags().StringP("output", "o", "text", "Output format: text, csv.")
 	cmd.Flags().BoolP("verbose", "v", false, "Provide additional debug details.")
 	return cmd
 }
