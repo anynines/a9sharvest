@@ -33,7 +33,7 @@ type TimeEntry struct {
 	SpentDate string `json:"spent_date"`
 }
 
-type Content struct {
+type TimeEntriesPage struct {
 	TimeEntries []TimeEntry `json:"time_entries"`
 	NextPage    *int        `json:"next_page"`
 }
@@ -112,7 +112,7 @@ func fetchTimeEntries() ([]TimeEntry, error) {
 			return entries, err
 		}
 
-		var content Content
+		var content TimeEntriesPage
 		err = json.Unmarshal(data, &content)
 		if err != nil {
 			return entries, err
