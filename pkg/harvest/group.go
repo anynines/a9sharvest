@@ -24,12 +24,18 @@ type User struct {
 	Name string
 }
 
+type Task struct {
+	Id   int
+	Name string
+}
+
 type TimeEntry struct {
 	Id        int
 	Hours     float64
 	Notes     string
 	Project   Project
 	User      User
+	Task      Task
 	SpentDate string `json:"spent_date"`
 }
 
