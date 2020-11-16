@@ -37,6 +37,13 @@ func (r *Report) Run() {
 		allowed_user_ids_map[v] = 1
 	}
 
+	allowed_task_names_enabled := len(os.Getenv("ALLOWED_TASK_NAMES")) > 0
+	allowed_task_names := strings.Split(os.Getenv("ALLOWED_TASK_NAMES"), ",")
+	allowed_task_names_map := map[string]int{}
+	for _, v := range allowed_task_names {
+		allowed_task_names_map[v] = 1
+	}
+
 	TAG_UNKNOWN := "[unknown]"
 	tags := strings.Split(os.Getenv("TAGS"), ",")
 	log.WithFields(log.Fields{
@@ -54,6 +61,8 @@ func (r *Report) Run() {
 			"project-name": v.Project.Name,
 			"user-id":      v.User.Id,
 			"user-name":    v.User.Name,
+			"task-id":      v.Task.Id,
+			"task-name":    v.Task.Name,
 		}
 		log.WithFields(logFields).Trace("time entry")
 
@@ -65,6 +74,13 @@ func (r *Report) Run() {
 		if allowed_user_ids_enabled {
 			if _, ok := allowed_user_ids_map[strconv.Itoa(v.User.Id)]; !ok {
 				log.WithFields(logFields).Trace("Skipped because of user id")
+				continue
+			}
+		}
+
+		if allowed_task_names_enabled {
+			if _, ok := allowed_task_names_map[v.Task.Name]; !ok {
+				log.WithFields(logFields).Trace("Skipped because of task name")
 				continue
 			}
 		}

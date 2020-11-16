@@ -27,6 +27,7 @@ $ export TAGS="[meeting_orga_lane],[support_lane]"
 
 $ export SKIP_PROJECT_IDS="12345,6789" # do not skip any project by default
 $ export ALLOWED_USER_IDS="3344,4444" # empty by default
+$ export ALLOWED_TASK_NAMES="Admin,Dev" # empty by default
 
 $ export FROM="20200901" # 14 days ago by default
 $ export TO="20200914" # today by default
