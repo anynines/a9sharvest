@@ -5,6 +5,7 @@ import (
 	"strconv"
 	"strings"
 
+	"github.com/gogolok/go-harvest/harvest"
 	log "github.com/sirupsen/logrus"
 )
 
@@ -13,11 +14,11 @@ type ReportInterface interface {
 }
 
 type Report struct {
-	TimeEntries  []TimeEntry
+	TimeEntries  []*harvest.TimeEntry
 	groupedByTag map[string]float64
 }
 
-func NewReport(timeEntries []TimeEntry) Report {
+func NewReport(timeEntries []*harvest.TimeEntry) Report {
 	return Report{
 		TimeEntries: timeEntries,
 	}

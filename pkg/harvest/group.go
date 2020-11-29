@@ -1,48 +1,17 @@
 package harvest
 
 import (
-	"encoding/json"
+	"context"
 	"fmt"
-	"net/url"
 	"os"
-	"strconv"
 	"strings"
 	"time"
 
+	"github.com/gogolok/go-harvest/harvest"
 	log "github.com/sirupsen/logrus"
 )
 
 type OutputFormat uint32
-
-type Project struct {
-	Id   int
-	Name string
-}
-
-type User struct {
-	Id   int
-	Name string
-}
-
-type Task struct {
-	Id   int
-	Name string
-}
-
-type TimeEntry struct {
-	Id        int
-	Hours     float64
-	Notes     string
-	Project   Project
-	User      User
-	Task      Task
-	SpentDate string `json:"spent_date"`
-}
-
-type TimeEntriesPage struct {
-	TimeEntries []TimeEntry `json:"time_entries"`
-	NextPage    *int        `json:"next_page"`
-}
 
 type Result struct {
 	GroupedByTag map[string]float64
@@ -104,57 +73,54 @@ func CheckEnvVariables() error {
 	return nil
 }
 
-func fetchTimeEntries() ([]TimeEntry, error) {
-	entries := []TimeEntry{}
-
-	log.Debug("Fetching Harvest entries via HTTP API...")
-	nextPage := 1
-	for {
-		log.WithFields(log.Fields{
-			"page": nextPage,
-		}).Trace("Querying page...")
-		data, err := fetchData(nextPage)
-		if err != nil {
-			return entries, err
-		}
-
-		var content TimeEntriesPage
-		err = json.Unmarshal(data, &content)
-		if err != nil {
-			return entries, err
-		}
-		entries = append(entries, content.TimeEntries...)
-
-		if content.NextPage == nil {
-			break
-		}
-		nextPage = *content.NextPage
-	}
-	log.Debug("Fetched Harvest entries.")
-
-	return entries, nil
-}
-
-func fetchData(page int) ([]byte, error) {
+func fetchTimeEntries() ([]*harvest.TimeEntry, error) {
 	to := os.Getenv("TO")
 	if len(to) < 1 {
 		to = time.Now().Format("20060102")
 	}
-
 	from := os.Getenv("FROM")
 	if len(from) < 1 {
 		from = time.Now().AddDate(0, 0, -14).Format("20060102")
 	}
+	perPage := 100
 
-	v := url.Values{}
-	v.Set("from", from)
-	v.Set("to", to)
-	v.Set("page", strconv.Itoa(page))
-	v.Set("per_page", "100")
+	accountId := os.Getenv("ACCOUNT_ID")
+	accessToken := os.Getenv("TOKEN")
 
-	// https://help.getharvest.com/api-v2/timesheets-api/timesheets/time-entries/#list-all-time-entries
-	url := "https://api.harvestapp.com/v2/time_entries" + "?" + v.Encode()
-	return HttpGet(url, os.Getenv("ACCOUNT_ID"), os.Getenv("TOKEN"))
+	ctx := context.Background()
+
+	log.Debug("Fetching Harvest entries via HTTP API...")
+	nextPage := 1
+	entries := []*harvest.TimeEntry{}
+
+	client := harvest.NewClient(accessToken, accountId)
+
+	for {
+		log.WithFields(log.Fields{
+			"page": nextPage,
+		}).Trace("Querying page...")
+
+		opts := &harvest.TimeEntriesListOptions{
+			From:        from,
+			To:          to,
+			ListOptions: harvest.ListOptions{Page: nextPage, PerPage: perPage},
+		}
+
+		timeEntries, r, err := client.TimeEntries.List(ctx, opts)
+		if err != nil {
+			return entries, err
+		}
+
+		entries = append(entries, timeEntries...)
+
+		if r.NextPage == nextPage {
+			break
+		}
+		nextPage = r.NextPage
+	}
+	log.Debug("Fetched Harvest entries.")
+
+	return entries, nil
 }
 
 func parseOutputFormat(of string) (OutputFormat, error) {
