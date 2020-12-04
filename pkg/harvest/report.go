@@ -15,12 +15,14 @@ type ReportInterface interface {
 
 type Report struct {
 	TimeEntries  []*harvest.TimeEntry
+	matcher      EntryMatcher
 	groupedByTag map[string]float64
 }
 
-func NewReport(timeEntries []*harvest.TimeEntry) Report {
+func NewReport(timeEntries []*harvest.TimeEntry, matcher EntryMatcher) Report {
 	return Report{
 		TimeEntries: timeEntries,
+		matcher:     matcher,
 	}
 }
 
@@ -46,10 +48,7 @@ func (r *Report) Run() {
 	}
 
 	TAG_UNKNOWN := "[unknown]"
-	tags := strings.Split(os.Getenv("TAGS"), ",")
-	log.WithFields(log.Fields{
-		"tags": tags,
-	}).Debug("Set up tags.")
+
 	grouped_by_tag := make(map[string]float64)
 
 	for _, v := range r.TimeEntries {
@@ -86,17 +85,10 @@ func (r *Report) Run() {
 			}
 		}
 
-		matched := false
-
-		for _, t := range tags {
-			if strings.Contains(v.Notes, t) {
-				grouped_by_tag[t] += v.Hours
-				matched = true
-				break
-			}
-		}
-
-		if !matched {
+		matched, tag := r.matcher.Match(v.Notes)
+		if matched {
+			grouped_by_tag[tag] += v.Hours
+		} else {
 			log.WithFields(logFields).Debug("New [unknown] entry")
 			grouped_by_tag[TAG_UNKNOWN] += v.Hours
 		}

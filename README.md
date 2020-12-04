@@ -23,7 +23,10 @@ $ export TOKEN=12345.pt.Avfe-WEFWEF...D4z
 
 $ export LOG_LEVEL=debug # `debug`, `trace` or empty
 
+# Either TAGS or PATTERN must exist.
+# If both, TAGS and PATTERN, are set, TAGS will be applied only.
 $ export TAGS="[meeting_orga_lane],[support_lane]"
+$ export PATTERN="\[DS-\d+\]"
 
 $ export SKIP_PROJECT_IDS="12345,6789" # do not skip any project by default
 $ export ALLOWED_USER_IDS="3344,4444" # empty by default

@@ -45,7 +45,17 @@ func Group(verboseFlag bool, outputFlag string) error {
 		return err
 	}
 
-	report := NewReport(entries)
+	var matcher EntryMatcher
+	if len(os.Getenv("PATTERN")) > 0 {
+		matcher, err = NewPatternEntryMatcher(os.Getenv("PATTERN"))
+		if err != nil {
+			return err
+		}
+	} else {
+		matcher = NewTagEntryMatcher(os.Getenv("TAGS"))
+	}
+
+	report := NewReport(entries, matcher)
 	report.Run()
 	stats := report.Stats()
 
@@ -62,12 +72,18 @@ func Group(verboseFlag bool, outputFlag string) error {
 }
 
 func CheckEnvVariables() error {
-	keys := []string{"ACCOUNT_ID", "TOKEN", "TAGS"}
+	keys := []string{"ACCOUNT_ID", "TOKEN"}
 
 	for _, key := range keys {
 		if len(os.Getenv(key)) < 1 {
 			return fmt.Errorf("You MUST set the environment variable %s", key)
 		}
+	}
+
+	tagsExist := len(os.Getenv("TAGS")) > 0
+	patternExists := len(os.Getenv("PATTERN")) > 0
+	if !tagsExist && !patternExists {
+		return fmt.Errorf("You MUST set the environment variable TAGS or PATTERN")
 	}
 
 	return nil
