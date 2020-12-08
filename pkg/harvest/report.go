@@ -88,6 +88,7 @@ func (r *Report) Run() {
 		matched, tag := r.matcher.Match(v.Notes)
 		if matched {
 			grouped_by_tag[tag] += v.Hours
+			log.WithFields(logFields).Info("time entry matched")
 		} else {
 			log.WithFields(logFields).Debug("New [unknown] entry")
 			grouped_by_tag[TAG_UNKNOWN] += v.Hours
