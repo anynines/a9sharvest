@@ -17,12 +17,14 @@ type Report struct {
 	TimeEntries  []*harvest.TimeEntry
 	matcher      EntryMatcher
 	groupedByTag map[string]float64
+	skipUnknown  bool
 }
 
-func NewReport(timeEntries []*harvest.TimeEntry, matcher EntryMatcher) Report {
+func NewReport(timeEntries []*harvest.TimeEntry, matcher EntryMatcher, skipUnknown bool) Report {
 	return Report{
 		TimeEntries: timeEntries,
 		matcher:     matcher,
+		skipUnknown: skipUnknown,
 	}
 }
 
@@ -91,7 +93,9 @@ func (r *Report) Run() {
 			log.WithFields(logFields).Info("time entry matched")
 		} else {
 			log.WithFields(logFields).Debug("New [unknown] entry")
-			grouped_by_tag[TAG_UNKNOWN] += v.Hours
+			if !r.skipUnknown {
+				grouped_by_tag[TAG_UNKNOWN] += v.Hours
+			}
 		}
 	}
 

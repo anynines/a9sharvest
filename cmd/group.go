@@ -14,12 +14,14 @@ func newCmdGroup() *cobra.Command {
 		RunE: func(cmd *cobra.Command, args []string) error {
 			outputFlag, _ := cmd.Flags().GetString("output")
 			verboseFlag, _ := cmd.Flags().GetBool("verbose")
+			skipUnknown, _ := cmd.Flags().GetBool("skip-unknown")
 
-			return harvest.Group(verboseFlag, outputFlag)
+			return harvest.Group(verboseFlag, outputFlag, skipUnknown)
 		},
 	}
 
 	cmd.Flags().StringP("output", "o", "text", "Output format: text, csv.")
 	cmd.Flags().BoolP("verbose", "v", false, "Provide additional debug details.")
+	cmd.Flags().BoolP("skip-unknown", "s", false, "Skip unknown entries and do not print those.")
 	return cmd
 }

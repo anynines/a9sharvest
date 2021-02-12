@@ -17,7 +17,7 @@ type Result struct {
 	GroupedByTag map[string]float64
 }
 
-func Group(verboseFlag bool, outputFlag string) error {
+func Group(verboseFlag bool, outputFlag string, skipUnknown bool) error {
 	if verboseFlag {
 		log.SetLevel(log.DebugLevel)
 	}
@@ -55,7 +55,7 @@ func Group(verboseFlag bool, outputFlag string) error {
 		matcher = NewTagEntryMatcher(os.Getenv("TAGS"))
 	}
 
-	report := NewReport(entries, matcher)
+	report := NewReport(entries, matcher, skipUnknown)
 	report.Run()
 	stats := report.Stats()
 
