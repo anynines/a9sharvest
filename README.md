@@ -35,14 +35,16 @@ $ export ALLOWED_TASK_NAMES="Admin,Dev" # empty by default
 $ export FROM="20200901" # 14 days ago by default
 $ export TO="20200914" # today by default
 
-$ a9sharvest group
+$ a9sharvest download -o entries.json
+
+$ a9sharvest group -i entries.json
           TAG         | HOURS  |   %
 ----------------------+--------+--------
   [meeting_orga_lane] |  97.50 | 48.75
   [support_lane]      | 100.50 | 50.25
   [unknown]           |   2.00 |  1.00
 
-$ a9sharvest group -o csv
+$ a9sharvest group -i entries.json -o csv
 Tag,Hours,Percentage
 [meeting_orga_lane],97.50,48.75
 [support_lane],100.50,50.25
