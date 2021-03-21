@@ -30,7 +30,12 @@ func Group(verboseFlag bool, outputFlag string, skipUnknown bool) error {
 		log.SetLevel(lvl)
 	}
 
-	err := CheckEnvVariables()
+	err := CheckRequiredEnvVariables()
+	if err != nil {
+		return err
+	}
+
+	err = CheckOptionalEnvVariables()
 	if err != nil {
 		return err
 	}
@@ -71,7 +76,7 @@ func Group(verboseFlag bool, outputFlag string, skipUnknown bool) error {
 	return nil
 }
 
-func CheckEnvVariables() error {
+func CheckRequiredEnvVariables() error {
 	keys := []string{"ACCOUNT_ID", "TOKEN"}
 
 	for _, key := range keys {
@@ -80,6 +85,10 @@ func CheckEnvVariables() error {
 		}
 	}
 
+	return nil
+}
+
+func CheckOptionalEnvVariables() error {
 	tagsExist := len(os.Getenv("TAGS")) > 0
 	patternExists := len(os.Getenv("PATTERN")) > 0
 	if !tagsExist && !patternExists {
