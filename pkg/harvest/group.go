@@ -2,6 +2,7 @@ package harvest
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"os"
 	"strings"
@@ -17,7 +18,7 @@ type Result struct {
 	GroupedByTag map[string]float64
 }
 
-func Group(verboseFlag bool, outputFlag string, skipUnknown bool) error {
+func Group(verboseFlag bool, inputFlag string, outputFlag string, skipUnknown bool) error {
 	if verboseFlag {
 		log.SetLevel(log.DebugLevel)
 	}
@@ -45,9 +46,20 @@ func Group(verboseFlag bool, outputFlag string, skipUnknown bool) error {
 		log.Fatalln(err)
 	}
 
-	entries, err := fetchTimeEntries()
-	if err != nil {
-		return err
+	var entries []*harvest.TimeEntry
+	if len(inputFlag) < 1 {
+		entries, err = fetchTimeEntries()
+		if err != nil {
+			return err
+		}
+	} else {
+		data, err := os.ReadFile(inputFlag)
+		if err != nil {
+			return err
+		}
+		if err = json.Unmarshal(data, &entries); err != nil {
+			return err
+		}
 	}
 
 	var matcher EntryMatcher
