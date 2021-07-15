@@ -35,6 +35,12 @@ func (r *Report) Run() {
 		skip_project_ids_map[v] = 1
 	}
 
+	allowed_project_ids := strings.Split(os.Getenv("ALLOWED_PROJECT_IDS"), ",")
+	allowed_project_ids_map := map[string]int{}
+	for _, v := range allowed_project_ids {
+		allowed_project_ids_map[v] = 1
+	}
+
 	allowed_user_ids_enabled := len(os.Getenv("ALLOWED_USER_IDS")) > 0
 	allowed_user_ids := strings.Split(os.Getenv("ALLOWED_USER_IDS"), ",")
 	allowed_user_ids_map := map[string]int{}
@@ -71,6 +77,13 @@ func (r *Report) Run() {
 		if _, ok := skip_project_ids_map[strconv.Itoa(v.Project.Id)]; ok {
 			log.WithFields(logFields).Trace("Skipped because of project id")
 			continue
+		}
+
+		if len(allowed_project_ids) > 0 {
+			if _, ok := allowed_project_ids_map[strconv.Itoa(v.Project.Id)]; !ok {
+				log.WithFields(logFields).Trace("Skipped because of project id (not allowed)")
+				continue
+			}
 		}
 
 		if allowed_user_ids_enabled {

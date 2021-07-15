@@ -29,6 +29,7 @@ $ export TAGS="[meeting_orga_lane],[support_lane]"
 $ export PATTERN="\[DS-\d+\]"
 
 $ export SKIP_PROJECT_IDS="12345,6789" # do not skip any project by default
+$ export ALLOWED_PROJECT_IDS="12345,6789" # only process projects in this list if none empty
 $ export ALLOWED_USER_IDS="3344,4444" # empty by default
 $ export ALLOWED_TASK_NAMES="Admin,Dev" # empty by default
 
