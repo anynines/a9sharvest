@@ -12,8 +12,7 @@ $ brew install a9sharvest
 # Requirements
 
 Before you can use `a9sharvest` you need a token and the account ID.
-You can get both by accessing the [developer tools](https://id.getharvest.com/developers)
-and creating a new token.
+You can get both by accessing the [developer tools](https://id.getharvest.com/developers) and creating a new token.
 
 # Usage
 
